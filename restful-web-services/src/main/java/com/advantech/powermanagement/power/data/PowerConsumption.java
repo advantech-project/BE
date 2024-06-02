@@ -13,11 +13,11 @@ public class PowerConsumption {
 	public PowerConsumption() {
 
 	}
-	private String building;
+	private String building; // 서호관, 하이테크
 	@Id
-	private Double datavalue;
+	private Double datavalue; // 10101010 지금까지 사용한 총 전력 사용량
 
-	private Integer timestamp;
+	private Integer timestamp; // 9: 35 9: 25
 	private Date datetime;
 
 	public PowerConsumption(String building, Double dataValue, Integer timeStamp, Date datetime) {
