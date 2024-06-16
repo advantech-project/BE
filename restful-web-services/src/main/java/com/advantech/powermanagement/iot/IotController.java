@@ -15,19 +15,33 @@ public class IotController {
         this.iotConfig = iotConfig;
     }
     @PostMapping("/iot/turn")
+    // 1,2,3,4 smart plug
+    // 5 fan
     public Iot iotTurn(@RequestBody Iot iot){
         Iot result;
         try{
-            WebClient webClient = WebClient.builder().build();
-            result = webClient.post()
-                    .uri(iotConfig.getPlug())
-                    .bodyValue(iot)
-                    .retrieve()
-                    .bodyToMono(Iot.class)
-                    .block();
+            if (iot.getId() != 5) {
+                WebClient webClient = WebClient.builder().build();
+                result = webClient.post()
+                        .uri(iotConfig.getPlug())
+                        .bodyValue(iot)
+                        .retrieve()
+                        .bodyToMono(Iot.class)
+                        .block();
+
+            }
+            else {
+                WebClient webClient = WebClient.builder().build();
+                result = webClient.get()
+                        .uri(iotConfig.getFan() + "/control")
+                        .retrieve()
+                        .bodyToMono(Iot.class)
+                        .block();
+            }
             return result;
         }
         catch(Exception e){
+            iot.setStatus("error");
             return iot;
         }
     }
@@ -42,8 +56,18 @@ public class IotController {
                     .retrieve()
                     .bodyToMono(new ParameterizedTypeReference<List<Iot>>() {})
                     .block();
+
+            webClient = WebClient.builder().build();
+            Iot result2 = webClient.get()
+                    .uri(iotConfig.getFan() + "/status")
+                    .retrieve()
+                    .bodyToMono(Iot.class)
+                    .block();
+
             for(int i = 0; i < result.size(); i++)
                 System.out.println(result.get(i).toString());
+
+            result.add(result2);
             return result;
         }
         catch(Exception e){
